@@ -34,6 +34,8 @@ find_primes(mpz_t &p,
 
         if (i == 0) {
             mpz_set(p, x); // p = x
+        } else if (mpz_cmp(p, x) == 0) { // p == x
+            i--; // retry
         } else {
             mpz_set(q, x); // q = x
         }
