@@ -71,10 +71,20 @@ int main(int argc, char **argv) {
         mpz_out_str(stdout, 10, d);
         fputc('\n', stdout);
 
+        /* get modulus */
+        mpz_t n;
+        mpz_init(n);
+        mpz_mul(n, p, q); // n = p * q
+        /* TODO: remove printing after testing */
+        fputs("n = ", stdout);
+        mpz_out_str(stdout, 10, n);
+        fputc('\n', stdout);
+
         mpz_clear(p);
         mpz_clear(q);
         mpz_clear(e);
         mpz_clear(d);
+        mpz_clear(n);
         fclose(priv_fp);
         fclose(pub_fp);
         return 0;
