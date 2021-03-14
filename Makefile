@@ -5,10 +5,16 @@ OBJS := $(patsubst %.cpp, %.o, $(SRCS))
 
 .PHONY: all clean
 
-all:
+all: keygen.out
 
 clean:
-	-rm $(OBJS)
+	-rm $(OBJS) keygen.out
+
+keygen.out: keygen.o rsa-primes.o rsa-exponents.o
+	$(CC) -o $@ $^
+
+keygen.o: %.o: %.cpp rsa-primes.hpp rsa-exponents.hpp key-files.hpp
+	$(CC) -c -o $@ $<
 
 rsa-primes.o: %.o: %.cpp %.hpp
 	$(CC) -c -o $@ $<
