@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <gmp.h>
 #include "key-files.hpp"
+#include "rsa-exponents.hpp"
+#include "rsa-primes.hpp"
 
 static void
 print_help(int argc,
@@ -38,6 +41,20 @@ int main(int argc, char **argv) {
                 fputs("error: failed to open key files.\n", stderr);
                 exit(EXIT_FAILURE);
         }
+
+        /* get primes */
+        mpz_t p;
+        mpz_init(p);
+        mpz_t q;
+        mpz_init(q);
+        find_primes(p, q, num_digits);
+        fputs("p = ", stdout);
+        mpz_out_str(stdout, 10, p);
+        fputc('\n', stdout);
+
+        fputs("q = ", stdout);
+        mpz_out_str(stdout, 10, q);
+        fputc('\n', stdout);
 
         return 0;
 }
