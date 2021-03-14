@@ -5,6 +5,9 @@
 #include "rsa-exponents.hpp"
 #include "rsa-primes.hpp"
 
+/** Print a line of help about program usage.
+ * @param[in]   argc    argc from main
+ * @param[in]   argv    argv from main */
 static void
 print_help(int argc,
            char **argv);
@@ -48,14 +51,32 @@ int main(int argc, char **argv) {
         mpz_t q;
         mpz_init(q);
         find_primes(p, q, num_digits);
+        /* TODO: remove printing after testing */
         fputs("p = ", stdout);
         mpz_out_str(stdout, 10, p);
         fputc('\n', stdout);
-
         fputs("q = ", stdout);
         mpz_out_str(stdout, 10, q);
         fputc('\n', stdout);
 
+        /* get exponents */
+        mpz_t e;
+        mpz_t d;
+        find_rsa_exp(p, q, e, d);
+        /* TODO: remove printing after testing */
+        fputs("e = ", stdout);
+        mpz_out_str(stdout, 10, e);
+        fputc('\n', stdout);
+        fputs("d = ", stdout);
+        mpz_out_str(stdout, 10, d);
+        fputc('\n', stdout);
+
+        mpz_clear(p);
+        mpz_clear(q);
+        mpz_clear(e);
+        mpz_clear(d);
+        fclose(priv_fp);
+        fclose(pub_fp);
         return 0;
 }
 
