@@ -2,49 +2,48 @@
  * C++ Program to Implement Miller Rabin Primality Test
  */
 
-#include <stdio.h>
-#include <iostream>
-#include <cstring>
 #include <cstdlib>
 #include <time.h>
-#include <gmp.h>
+#include "rsa-primes.hpp"
 
 using namespace std;
 
-void RanNum(mpz_t& x, int y);
-bool Miller(const mpz_t x, int iteration,int digits);
-void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret);
-void mulmod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret);
+static void RanNum(mpz_t& x, int y);
+static bool Miller(const mpz_t x, int iteration,int digits);
+static void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret);
+static void mulmod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret);
 
-int main()
+void
+find_primes(mpz_t &p,
+            mpz_t &q,
+            int num_digits)
 {
     srand(time(NULL));
 
     int iteration = 5;
-    int y;
+    int y = num_digits;
     mpz_t x;
     mpz_init(x);
-    
-	cout<<"Enter how many digits you want to use: ";
-	cin>>y;
-	
-    RanNum(x, y);
 
-    for (int i = 0; !Miller(x, iteration,y); i++) {
-        cout << "Attempt #" << i << ": The number is not prime" << endl;
+    for (int i = 0; i < 2; i++) {
         RanNum(x, y);
+
+        for (int i = 0; !Miller(x, iteration,y); i++) {
+            RanNum(x, y);
+        }
+
+        if (i == 0) {
+            mpz_set(p, x); // p = x
+        } else {
+            mpz_set(q, x); // q = x
+        }
     }
 
-    cout << "Prime found: " << endl;
-    mpz_out_str(stdout, 10, x);
-    fputc('\n', stdout);
-
     mpz_clear(x);
-    return 0;
 }
 
 //Random Number generator takes
-void RanNum(mpz_t& x, int y) {
+static void RanNum(mpz_t& x, int y) {
     mpz_set_si(x, 0); // x = 0
 
     int z;
@@ -62,7 +61,7 @@ void RanNum(mpz_t& x, int y) {
 }
 
 //Miller-Rabin primality test, iteration signifies the accuracy
-bool Miller(const mpz_t x, int iteration, int digits)
+static bool Miller(const mpz_t x, int iteration, int digits)
 {
 	int secNum = digits-1;			//for randomizing the second number
     if (mpz_cmp_si(x, 2) < 0) // x < 2
@@ -142,7 +141,7 @@ bool Miller(const mpz_t x, int iteration, int digits)
 }
 
  //modular exponentiation
-void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret)
+static void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret)
 {
 
     mpz_t exp_cpy;
@@ -174,7 +173,7 @@ void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret)
 
 
 //calculates (a * b) % c
-void mulmod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret)
+static void mulmod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret)
 {
     mpz_t x;
     mpz_init_set_si(x, 0); // x = 0
