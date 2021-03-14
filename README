@@ -1,0 +1,15 @@
+Class: CSCI415
+Project: 1
+Title: Implementation and Analyses of RSA
+
+Group members:
+Cameron Nieters,
+Connor Cloutier,
+Anuska Shrestha,
+Abhishek Adhikari
+
+Dependencies:
+* GMP - Used to hold arbitrary-precision integers
+
+To compile: "make"
+To run key generation: "./keygen.out"
