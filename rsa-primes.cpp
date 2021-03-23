@@ -10,8 +10,8 @@ using namespace std;
 
 static void RanNum(mpz_t& x, int y);
 static bool Miller(const mpz_t x, int iteration,int digits);
-static void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret);
-static void mulmod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret);
+static void modExp(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret);
+static void multimod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret);
 
 void
 find_primes(mpz_t &p,
@@ -28,7 +28,7 @@ find_primes(mpz_t &p,
     for (int i = 0; i < 2; i++) {
         RanNum(x, y);
 
-        for (int i = 0; !Miller(x, iteration,y); i++) {
+        for (int i = 0; !Miller(x, iteration,y); i++) {		//Miller returns true if the number is prime
             RanNum(x, y);
         }
 
@@ -49,21 +49,21 @@ static void RanNum(mpz_t& x, int y) {
     mpz_set_si(x, 0); // x = 0
 
     int z;
-    z = (rand() % 9) + 1;
+    z = (rand() % 9) + 1;			//random number 1 to 9 so that the first digit isn't zero
     mpz_add_ui(x, x, z); // x += z
 
     for (int i = 1; i < y; i++) {
 
         mpz_mul_si(x, x, 10); // x *= 10
-        z = rand() % 10;
+        z = rand() % 10;			//random number 0 to 9 added to the main variable
         mpz_add_ui(x, x, z); // x += z
 
     }
 
 }
 
-//Miller-Rabin primality test, iteration signifies the accuracy
-static bool Miller(const mpz_t x, int iteration, int digits)
+//Miller-Rabin primality test
+static bool Miller(const mpz_t x, int iteration, int digits)	//iteration is to guarantee prime
 {
 	int secNum = digits-1;			//for randomizing the second number
     if (mpz_cmp_si(x, 2) < 0) // x < 2
@@ -71,7 +71,7 @@ static bool Miller(const mpz_t x, int iteration, int digits)
         return false;
     }
 
-    if ((mpz_cmp_si(x, 2) == 0) // x == 2
+    if ((mpz_cmp_si(x, 2) == 0) // x == 2		//test if number is prime
         || (mpz_tdiv_ui(x, 2) == 0) // x % 2 == 0
         || (mpz_tdiv_ui(x, 3) == 0) // x % 3 == 0
         || (mpz_tdiv_ui(x, 5) == 0) // x % 5 == 0
@@ -85,7 +85,7 @@ static bool Miller(const mpz_t x, int iteration, int digits)
     mpz_sub_ui(s, x, 1); // s = x - 1
 
     while (mpz_tdiv_ui(s, 2) == 0) // s % 2 == 0
-    {
+    {							//is is used as the exponent variable
 
         mpz_tdiv_q_ui(s, s, 2); // s = s / 2
     }
@@ -98,7 +98,7 @@ static bool Miller(const mpz_t x, int iteration, int digits)
     mpz_init(mod);
     mpz_t x_sub1;
     mpz_init(x_sub1);
-    for (int i = 0; i < iteration; i++)
+    for (int i = 0; i < iteration; i++)			//this needed to test the number at least 5 times to prove prime
     {
         RanNum(a, secNum);
 
@@ -109,7 +109,7 @@ static bool Miller(const mpz_t x, int iteration, int digits)
 
         mpz_set(temp, s); // temp = s
 
-        modulo(a, temp, x, mod); //base,expon,mod
+        modExp(a, temp, x, mod); //base,expon,mod
 
         mpz_sub_ui(x_sub1, x, 1); // x - 1
         while ((mpz_cmp(temp, x_sub1) != 0) // temp != x - 1
@@ -117,7 +117,7 @@ static bool Miller(const mpz_t x, int iteration, int digits)
                && (mpz_cmp(mod, x_sub1) != 0)) // mod != x - 1
         {
 
-            mulmod(mod, mod, x, mod);
+            multimod(mod, mod, x, mod);
 
             mpz_mul_si(temp, temp, 2); // temp = temp * 2
         }
@@ -143,7 +143,7 @@ static bool Miller(const mpz_t x, int iteration, int digits)
 }
 
  //modular exponentiation
-static void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret)
+static void modExp(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_t &ret)
 {
 
     mpz_t exp_cpy;
@@ -175,7 +175,7 @@ static void modulo(const mpz_t base, const mpz_t exponent, const mpz_t mod, mpz_
 
 
 //calculates (a * b) % c
-static void mulmod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret)
+static void multimod(const mpz_t a, const mpz_t b, const mpz_t mod, mpz_t &ret)
 {
     mpz_t x;
     mpz_init_set_si(x, 0); // x = 0
